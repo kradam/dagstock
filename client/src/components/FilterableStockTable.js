@@ -8,9 +8,9 @@ function FilterableStockTable({ initialStocks }) {
   const [title, setTitle] = useState('');
 
   useEffect(() => {
-    fetch('/api/hello')
-      .then(res => res.text())
-      .then(data => setTitle(data))
+    fetch('/api/getQuote?symbol=ACN')
+      .then(res => res.json())
+      .then(data => setTitle(data.c || ''))
       .catch(() => setTitle(''));
   }, []);
 

@@ -1,21 +1,17 @@
 {
-  "name": "server",
+  "name": "my-react-app",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js",
-     "dev": "nodemon src/index.js"
+    "start": "concurrently \"npm start --prefix client\" \"npm run dev --prefix server\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "express": "^5.1.0",
-    "finnhub": "^2.0.7"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.10"
+    "concurrently": "^9.2.0",
+    "dotenv": "^17.2.1"
   }
 }
