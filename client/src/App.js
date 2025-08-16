@@ -12,9 +12,9 @@ function App() {
 
   const [stocks, setStocks] = useState([]);
 
-   useEffect(() => {
-     getStocks();
-   }, []);
+  useEffect(() => {
+    getStocks();
+  }, []);
 
   async function getStocks() {
     const { data, error } = await supabase
@@ -28,11 +28,27 @@ function App() {
           )
         )
       `);
-      
+
     if (error) {
       console.error("Error fetching stocks:", error);
     } else {
-      setStocks(data);
+
+      // Fetch latest price for each stock
+      const updatedStocks = await Promise.all(
+        data.map(async (stock) => {
+          try {
+            const res = await fetch(`/api/getQuote?symbol=${stock.company_symbol}`);
+            const quote = await res.json();
+            // Replace price with latest value from API (assuming quote.c is the price)
+            return { ...stock, price: quote.c };
+          } catch (err) {
+            // If API fails, keep original price
+            return stock;
+          }
+        })
+      );
+
+      setStocks(updatedStocks);
     }
   }
 
@@ -43,7 +59,7 @@ function App() {
     //   ))}
     // </ul>    
     <div className="App">
-      <FilterableStockTable initialStocks={stocks} />  
+      <FilterableStockTable initialStocks={stocks} />
     </div>
   );
 }
