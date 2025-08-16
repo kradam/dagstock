@@ -2,24 +2,33 @@ import './App.css';
 import FilterableStockTable from './components/FilterableStockTable';
 import { stockData } from './data/stockData';
 import apiConfig from './config/apiConfig';
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(process.env.REACT_APP_SUPABASE_URL, process.env.REACT_APP_SUPABASE_ANON_KEY);
 
 
 function App() {
 
+  const [stocks, setStocks] = useState([]);
+
    useEffect(() => {
-    console.log('=== API Configuration ===');
-    // console.log('Environment:', apiConfig.getEnvironment());
-    console.log('Finnhub API Key:', apiConfig.getFinnhubConfig().apiKey || 'NOT SET');
-    // console.log('Alpha Vantage API Key:', apiConfig.getAlphaVantageConfig().apiKey || 'NOT SET');
-    // console.log('API Keys Configured:', apiConfig.isConfigured());
-    // console.log('Should Use Mock Data:', apiConfig.shouldUseMockData());
-    console.log('========================');
-  }, []);
+     getStocks();
+   }, []);
+
+  async function getStocks() {
+    const { data } = await supabase.from("stocks").select();
+    setStocks(data);
+  }
 
   return (
+    // <ul>
+    //   {stocks.map((stock) => (
+    //     <li key={stock.exchange}>{stock.company_symbol} {stocks.length}</li>
+    //   ))}
+    // </ul>    
     <div className="App">
-      <FilterableStockTable initialStocks={stockData} />
+      <FilterableStockTable initialStocks={stocks} />  
     </div>
   );
 }

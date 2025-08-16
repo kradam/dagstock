@@ -1,9 +1,9 @@
 import React from 'react';
 
 // Stock row component
-function StockRow({ stock, onQuantityChange }) {
-  const totalValue = stock.quantity * stock.price;
-  
+function StockRow({ stock, onQuantityChange, totalValue }) {
+  const totalStockValue = stock.quantity * stock.price;
+  const percentOfPortfolio = totalValue > 0 ? ((totalStockValue / totalValue) * 100).toFixed(0) : "0";
   // Format numbers with thousand separators
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-US', {
@@ -12,16 +12,14 @@ function StockRow({ stock, onQuantityChange }) {
       minimumFractionDigits: 2
     }).format(amount);
   };
-  
   const handleQuantityChange = (e) => {
     const newQuantity = parseInt(e.target.value) || 0;
-    onQuantityChange(stock.symbol, newQuantity);
+    onQuantityChange(stock.id, newQuantity);
   };
-  
   return (
     <tr className="stock-row">
-      <td className="share-name">
-        {stock.name} ({stock.symbol})
+      <td className="company-name">
+        {stock.name} {stock.company_name}
       </td>
       <td className="quantity">
         <input 
@@ -36,7 +34,10 @@ function StockRow({ stock, onQuantityChange }) {
         {formatCurrency(stock.price)}
       </td>
       <td className="value">
-        {formatCurrency(totalValue)}
+        {formatCurrency(totalStockValue)}
+      </td>
+      <td className="percent">
+        {percentOfPortfolio}%
       </td>
     </tr>
   );

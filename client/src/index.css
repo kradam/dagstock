@@ -45,7 +45,7 @@ code {
   letter-spacing: 0.5px;
 }
 
-.stock-table th.share-name {
+.stock-table th.company-name {
   text-align: left;
 }
 
@@ -75,7 +75,7 @@ code {
   padding: 12px;
 }
 
-.stock-row .share-name {
+.stock-row .company-name {
   text-align: left;
   font-weight: 500;
 }

@@ -1,21 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import StockRow from './StockRow';
 
 // Stock table component
 function StockTable({ initialStocks, filterText, inStockOnly }) {
-  // Convert initialStocks array to a Map for efficient updates
-  const [stocksMap, setStocksMap] = useState(() => {
-    const map = new Map();
-    initialStocks.forEach(stock => map.set(stock.symbol, stock));
-    return map;
-  });
 
-  // Convert Map values to array for rendering and calculations
-  const stocks = Array.from(stocksMap.values());
-
-  // Calculate total portfolio value
-  const totalValue = stocks.reduce((sum, stock) => sum + (stock.quantity * stock.price), 0);
+//  console.log("Initial stocks :", initialStocks);
+  const [stocks, setStocks] = useState(initialStocks)
   
+  useEffect(() => {
+    setStocks(initialStocks);
+  }, [initialStocks]);
+
+  //console.log("Stocks:", stocks);
+
+  const totalValue = stocks.reduce((sum, stock) => sum + (stock.quantity * stock.price), 0);
+  console.log("Total Portfolio Value:", totalValue);
+
   // Format currency with thousand separators
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-US', {
@@ -26,20 +26,17 @@ function StockTable({ initialStocks, filterText, inStockOnly }) {
   };
   
   // Handle quantity changes
-  const handleQuantityChange = (symbol, newQuantity) => {
-    setStocksMap(prevMap => {
-      const newMap = new Map(prevMap);
-      const stock = newMap.get(symbol);
-      if (stock) {
-        newMap.set(symbol, { ...stock, quantity: newQuantity });
-      }
-      return newMap;
-    });
+  const handleQuantityChange = (id, newQuantity) => {
+    setStocks(prevStocks =>
+      prevStocks.map(stock =>
+        stock.id === id ? { ...stock, quantity: newQuantity } : stock
+      )
+    );
   };
   
   // Filter stocks by share-name starting with filterText, case insensitive
   const filteredStocks = stocks.filter(stock =>
-    stock.name.toLowerCase().startsWith(filterText.toLowerCase())
+    stock.company_name.toLowerCase().startsWith(filterText.toLowerCase())
   );
 
   return (
@@ -48,18 +45,21 @@ function StockTable({ initialStocks, filterText, inStockOnly }) {
       <table className="stock-table">
         <thead>
           <tr>
-            <th className="share-name">Share Name</th>
+            <th className="share-name">Company Name</th>
             <th className="quantity">Quantity</th>
             <th className="price">Price ($)</th>
             <th className="value">Value ($)</th>
+            <th className="percent">% of Portfolio</th>
           </tr>
         </thead>
         <tbody>
           {filteredStocks.map((stock) => (
             <StockRow 
-              key={stock.symbol} 
-              stock={stock} 
+              key={stock.company_symbol} 
+              stock={stock}
+              totalValue={totalValue}
               onQuantityChange={handleQuantityChange}
+
             />
           ))}
         </tbody>
@@ -68,9 +68,8 @@ function StockTable({ initialStocks, filterText, inStockOnly }) {
             <td className="share-name"><strong>Total Portfolio Value</strong></td>
             <td className="quantity"></td>
             <td className="price"></td>
-            <td className="value"><strong>{formatCurrency(
-              filteredStocks.reduce((sum, stock) => sum + (stock.quantity * stock.price), 0)
-            )}</strong></td>
+            <td className="value"><strong>{formatCurrency(totalValue)}</strong></td>
+            <td className="percent"><strong>100%</strong></td>
           </tr>
         </tfoot>
       </table>
