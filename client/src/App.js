@@ -17,8 +17,23 @@ function App() {
    }, []);
 
   async function getStocks() {
-    const { data } = await supabase.from("stocks").select();
-    setStocks(data);
+    const { data, error } = await supabase
+      .from('stocks')
+      .select(`
+        company_symbol, company_name, quantity, price,
+        stock_exchanges (
+          name,
+          currencies (
+            name
+          )
+        )
+      `);
+      
+    if (error) {
+      console.error("Error fetching stocks:", error);
+    } else {
+      setStocks(data);
+    }
   }
 
   return (

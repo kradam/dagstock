@@ -6,7 +6,7 @@ function StockTable({ initialStocks, filterText, inStockOnly }) {
 
 //  console.log("Initial stocks :", initialStocks);
   const [stocks, setStocks] = useState(initialStocks)
-  
+
   useEffect(() => {
     setStocks(initialStocks);
   }, [initialStocks]);
@@ -46,7 +46,10 @@ function StockTable({ initialStocks, filterText, inStockOnly }) {
         <thead>
           <tr>
             <th className="share-name">Company Name</th>
+            <th className="share-name">Symbol</th>
+            <th className="stock-exchange-name">Stock Exchange</th>
             <th className="quantity">Quantity</th>
+            <th className="currency">Currency</th>
             <th className="price">Price ($)</th>
             <th className="value">Value ($)</th>
             <th className="percent">% of Portfolio</th>
@@ -64,10 +67,8 @@ function StockTable({ initialStocks, filterText, inStockOnly }) {
           ))}
         </tbody>
         <tfoot>
-          <tr className="total-row">
-            <td className="share-name"><strong>Total Portfolio Value</strong></td>
-            <td className="quantity"></td>
-            <td className="price"></td>
+          <tr className="total-row</tr>">
+            <td className="share-name" colSpan="6"><strong>Total Portfolio Value</strong></td>
             <td className="value"><strong>{formatCurrency(totalValue)}</strong></td>
             <td className="percent"><strong>100%</strong></td>
           </tr>

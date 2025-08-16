@@ -19,16 +19,25 @@ function StockRow({ stock, onQuantityChange, totalValue }) {
   return (
     <tr className="stock-row">
       <td className="company-name">
-        {stock.name} {stock.company_name}
+        {stock.company_name}
+      </td>
+      <td className="company-name">
+        {stock.company_symbol}
+      </td>
+      <td className="company-name">
+        {stock.stock_exchanges.name}
       </td>
       <td className="quantity">
-        <input 
-          type="number" 
-          value={stock.quantity} 
+        <input
+          type="number"
+          value={stock.quantity}
           onChange={handleQuantityChange}
           min="0"
           className="quantity-input"
         />
+      </td>
+      <td className="currency">
+        {stock.stock_exchanges.currencies.name}
       </td>
       <td className="price">
         {formatCurrency(stock.price)}
