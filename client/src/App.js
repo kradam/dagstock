@@ -20,11 +20,11 @@ function App() {
     const { data, error } = await supabase
       .from('stocks')
       .select(`
-        company_symbol, company_name, quantity, price,
+        id, company_symbol, company_name, quantity, price,
         stock_exchanges (
           name,
           currencies (
-            name
+            name, ratio_to_master_currency
           )
         )
       `);

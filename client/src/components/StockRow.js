@@ -2,8 +2,9 @@ import React from 'react';
 
 // Stock row component
 function StockRow({ stock, onQuantityChange, totalValue }) {
-  const totalStockValue = stock.quantity * stock.price;
-  const percentOfPortfolio = totalValue > 0 ? ((totalStockValue / totalValue) * 100).toFixed(0) : "0";
+  const value = stock.quantity * stock.price;
+    console.log("Total Portfolio Value:", totalValue);
+  const percentOfPortfolio = totalValue > 0 ? ((value / totalValue) * 100).toFixed(0) : "0";
   // Format numbers with thousand separators
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-US', {
@@ -14,6 +15,7 @@ function StockRow({ stock, onQuantityChange, totalValue }) {
   };
   const handleQuantityChange = (e) => {
     const newQuantity = parseInt(e.target.value) || 0;
+    console.log("id:", stock.id);
     onQuantityChange(stock.id, newQuantity);
   };
   return (
@@ -43,7 +45,7 @@ function StockRow({ stock, onQuantityChange, totalValue }) {
         {formatCurrency(stock.price)}
       </td>
       <td className="value">
-        {formatCurrency(totalStockValue)}
+        {formatCurrency(value)}
       </td>
       <td className="percent">
         {percentOfPortfolio}%

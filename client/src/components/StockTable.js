@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import StockRow from './StockRow';
 
 // Stock table component
@@ -13,8 +13,7 @@ function StockTable({ initialStocks, filterText, inStockOnly }) {
 
   //console.log("Stocks:", stocks);
 
-  const totalValue = stocks.reduce((sum, stock) => sum + (stock.quantity * stock.price), 0);
-  console.log("Total Portfolio Value:", totalValue);
+  
 
   // Format currency with thousand separators
   const formatCurrency = (amount) => {
@@ -25,6 +24,15 @@ function StockTable({ initialStocks, filterText, inStockOnly }) {
     }).format(amount);
   };
   
+  const totalValue = useMemo(
+    () => stocks.reduce((sum, stock) => sum + (stock.quantity * stock.price), 0),
+    [stocks]
+  );
+
+    // Calculate total value from all stocks for percent calculation
+  // var totalValue = stocks.reduce((sum, stock) => sum + (stock.quantity * stock.price), 0);
+  // console.log("Total Portfolio Value:", totalValue);
+
   // Handle quantity changes
   const handleQuantityChange = (id, newQuantity) => {
     setStocks(prevStocks =>
@@ -32,12 +40,14 @@ function StockTable({ initialStocks, filterText, inStockOnly }) {
         stock.id === id ? { ...stock, quantity: newQuantity } : stock
       )
     );
+    // var totalValue = stocks.reduce((sum, stock) => sum + (stock.quantity * stock.price), 0);
   };
   
   // Filter stocks by share-name starting with filterText, case insensitive
   const filteredStocks = stocks.filter(stock =>
     stock.company_name.toLowerCase().startsWith(filterText.toLowerCase())
   );
+
 
   return (
     <div className="stock-portfolio">
@@ -50,8 +60,8 @@ function StockTable({ initialStocks, filterText, inStockOnly }) {
             <th className="stock-exchange-name">Stock Exchange</th>
             <th className="quantity">Quantity</th>
             <th className="currency">Currency</th>
-            <th className="price">Price ($)</th>
-            <th className="value">Value ($)</th>
+            <th className="price">Price</th>
+            <th className="value">Value</th>
             <th className="percent">% of Portfolio</th>
           </tr>
         </thead>
@@ -62,7 +72,6 @@ function StockTable({ initialStocks, filterText, inStockOnly }) {
               stock={stock}
               totalValue={totalValue}
               onQuantityChange={handleQuantityChange}
-
             />
           ))}
         </tbody>
