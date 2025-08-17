@@ -3,19 +3,21 @@ import React from 'react';
 // Stock row component
 function StockRow({ stock, onQuantityChange, totalValue }) {
   const value = stock.quantity * stock.price;
-    console.log("Total Portfolio Value:", totalValue);
-  const percentOfPortfolio = totalValue > 0 ? ((value / totalValue) * 100).toFixed(0) : "0";
+  // Use valueMaster and totalMasterValue for percent calculation
+  const masterCurrencyValue = value * (stock.stock_exchanges.currencies.ratio_to_master_currency || 1);
+  const percentOfPortfolio = totalValue > 0 ? ((masterCurrencyValue / totalValue) * 100).toFixed(0) : "0";
+
   // Format numbers with thousand separators
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 2
-    }).format(amount);
-  };
+  // const formatCurrency = (amount) => {
+  //   return new Intl.NumberFormat('en-US', {
+  //     style: 'currency',
+  //     currency: 'USD',
+  //     minimumFractionDigits: 2
+  //   }).format(amount);
+  // };
+
   const handleQuantityChange = (e) => {
     const newQuantity = parseInt(e.target.value) || 0;
-    console.log("id:", stock.id);
     onQuantityChange(stock.id, newQuantity);
   };
   return (
@@ -42,13 +44,16 @@ function StockRow({ stock, onQuantityChange, totalValue }) {
         {stock.stock_exchanges.currencies.name}
       </td>
       <td className="price">
-        {formatCurrency(stock.price)}
+        {stock.price.toLocaleString()}
       </td>
       <td className="value">
-        {formatCurrency(value)}
+        {Math.round(value).toLocaleString()}
+      </td>
+      <td className="value">
+        {Math.round(masterCurrencyValue).toLocaleString()}
       </td>
       <td className="percent">
-        {percentOfPortfolio}%
+        {percentOfPortfolio}
       </td>
     </tr>
   );

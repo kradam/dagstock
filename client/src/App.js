@@ -1,7 +1,6 @@
 import './App.css';
 import FilterableStockTable from './components/FilterableStockTable';
 import { stockData } from './data/stockData';
-import apiConfig from './config/apiConfig';
 import { useState, useEffect } from 'react';
 import { createClient } from "@supabase/supabase-js";
 

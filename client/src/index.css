@@ -107,15 +107,14 @@ code {
 }
 
 .stock-row .price,
-.stock-row .value {
-  text-align: right;
-  font-weight: bold;
-  color: #2e7d32;
+.stock-row .value,
+.stock-row .percent {
+  text-align: right;  
 }
 
 /* Total row styling */
 .total-row {
-   text-align: right;
+  text-align: right;
   background-color: #e3f2fd !important;
   border-top: 3px solid #1976d2;
 }
