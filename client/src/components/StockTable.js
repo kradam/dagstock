@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import StockRow from './StockRow';
 import { MASTER_CURRENCY } from '../config/appConfig';
+import { createClient } from '@supabase/supabase-js';
+
+// Supabase client
+const supabaseClient = createClient(process.env.REACT_APP_SUPABASE_URL, process.env.REACT_APP_SUPABASE_ANON_KEY);
 
 // Stock table component
 function StockTable({ initialStocks, filterText, inStockOnly }) {
@@ -41,12 +45,20 @@ function StockTable({ initialStocks, filterText, inStockOnly }) {
   // console.log("Total Portfolio Value:", totalValue);
 
   // Handle quantity changes
-  const handleQuantityChange = (id, newQuantity) => {
+  const handleQuantityChange = async (id, newQuantity) => {
     setStocks(prevStocks =>
       prevStocks.map(stock =>
         stock.id === id ? { ...stock, quantity: newQuantity } : stock
       )
     );
+    // Save the new quantity to Supabase
+    const { error } = await supabaseClient
+      .from('stocks')
+      .update({ quantity: newQuantity })
+      .eq('id', id);
+    if (error) {
+      console.error('Error updating quantity in Supabase:', error);
+    }
   };
   
   const filteredStocks = stocks.filter(stock =>
