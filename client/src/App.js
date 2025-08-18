@@ -36,10 +36,10 @@ function App() {
       const updatedStocks = await Promise.all(
         data.map(async (stock) => {
           try {
-            const res = await fetch(`/api/getQuote?symbol=${stock.company_symbol}`);
+            const res = await fetch(`/api/getQuote?symbol=${stock.company_symbol}&stock=${stock.stock_exchanges.name}`);
             const quote = await res.json();
             // Replace price with latest value from API (assuming quote.c is the price)
-            return { ...stock, price: quote.c };
+            return { ...stock, price: quote.current };
           } catch (err) {
             // If API fails, keep original price
             return stock;
