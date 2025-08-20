@@ -4,6 +4,7 @@
 
 const express = require('express');
 const dotenv = require('dotenv');
+
 dotenv.config();
 
 const app = express();
@@ -16,6 +17,7 @@ app.get('/api/hello', (req, res) => {
 app.get('/api/getQuote', (req, res) => {
   const finnhub = require('finnhub');
   const finnhubClient = new finnhub.DefaultApi(process.env.FINNHUB_API_KEY);
+  console.log(`Finnhub API Key: ${process.env.FINNHUB_API_KEY}`);
 
   const symbol = req.query.symbol?.trim();
   const stock = req.query.stock?.trim();
