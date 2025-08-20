@@ -8,10 +8,14 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const app = express();
-const port = 3001;
+const port = process.env.PORT || 3001;
 
 app.get('/api/hello', (req, res) => {
   res.send('Hello World!');
+});
+
+app.get("/api/env", (req, res) => {
+  res.json(process.env);
 });
 
 app.get('/api/getQuote', (req, res) => {
