@@ -14,14 +14,14 @@ app.get('/api/hello', (req, res) => {
   res.send('Hello World!');
 });
 
-app.get("/api/env", (req, res) => {
-  res.json(process.env);
-});
+// app.get("/api/env", (req, res) => {
+//   res.json(process.env);
+// });
 
 app.get('/api/getQuote', (req, res) => {
   const finnhub = require('finnhub');
   const finnhubClient = new finnhub.DefaultApi(process.env.FINNHUB_API_KEY);
-  console.log(`Finnhub API Key: ${process.env.FINNHUB_API_KEY}`);
+  
 
   const symbol = req.query.symbol?.trim();
   const stock = req.query.stock?.trim();
@@ -63,5 +63,6 @@ app.get('/api/getQuote', (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Server listening at http://localhost:${port}`);
+  console.log(`Server listening at port ${port}`);
+  console.log(`Finnhub API Key: ${process.env.FINNHUB_API_KEY}`);
 });
