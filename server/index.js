@@ -23,8 +23,8 @@ app.get('/api/getQuote', (req, res) => {
   const finnhubClient = new finnhub.DefaultApi(process.env.FINNHUB_API_KEY);
   
 
-  const symbol = req.query.symbol?.trim();
-  const stock = req.query.stock?.trim();
+  const symbol = req.query.symbol?.trim().toUpperCase();
+  const stock = req.query.stock?.trim().toUpperCase();
 
   if (!symbol || symbol.trim() === '') {
     return res.status(400).send('Symbol parameter is required');
@@ -64,5 +64,4 @@ app.get('/api/getQuote', (req, res) => {
 
 app.listen(port, () => {
   console.log(`Server listening at port ${port}`);
-  console.log(`Finnhub API Key: ${process.env.FINNHUB_API_KEY}`);
 });
