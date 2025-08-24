@@ -1,6 +1,7 @@
 //TODO implement tests
 //TODO implement serivce of external api errors.
 //TODO implement logger
+// NOTE  iwr "https://sincere-stillness-production.up.railway.app/api/getQuote?symbol=AAPL&stock=NYSE"
 
 const express = require('express');
 const dotenv = require('dotenv');
@@ -47,16 +48,18 @@ app.get('/api/getQuote', (req, res) => {
     // Fetch real data for non-NYSE stocks using stooq API
     (async () => {
       try {
-        const fetch = (await import('node-fetch')).default;
+        console.log(`Fetching quote for ${symbol} on ${stock}`);
+        const fetch = require('node-fetch'); // see comments at the bottom of the file
         // example url: https://stooq.pl/q/l/?s=kgh&f=sd2t2ohlcv&h&e=json
         const url = `https://stooq.pl/q/l/?s=${symbol}&f=sd2t2ohlcv&h&e=json`;
         const stooqRes = await fetch(url);
         const stooqData = await stooqRes.json();
+        console.log("data: ", stooqData);
         res.json({"current": stooqData?.symbols?.[0]?.close || null});
-        console.log(`Fetching quote for ${symbol} on ${stock}`);
         console.log(stooqData);
       } catch (err) {
-        res.status(500).send('Error retrieving quote from stooq');
+        console.error(`Error retrieving quote from stooq: ${err.message}`);
+        res.status(500).send(`Error retrieving quote from stooq: ${err.message}`);
       }
     })();
   }
@@ -65,3 +68,21 @@ app.get('/api/getQuote', (req, res) => {
 app.listen(port, () => {
   console.log(`Server listening at port ${port}`);
 });
+
+module.exports = app;
+
+
+
+/*
+to use 
+  const fetch = require('node-fetch'); 
+
+I had to downgrade node-fetch module.
+
+npm uninstall node-fetch
+npm install node-fetch@2
+
+When I used "dynamic exports"  an error was raised 
+A dynamic import callback was invoked without --experimental-vm-modules 
+The solution for it is use --experimental-vm-modules flag . I didn't tested it. 
+*/
