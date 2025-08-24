@@ -20,21 +20,21 @@ app.get('/api/hello', (req, res) => {
 // });
 
 app.get('/api/getQuote', (req, res) => {
-  const finnhub = require('finnhub');
-  const finnhubClient = new finnhub.DefaultApi(process.env.FINNHUB_API_KEY);
   
-
+  
   const symbol = req.query.symbol?.trim().toUpperCase();
   const stock = req.query.stock?.trim().toUpperCase();
-
+  
   if (!symbol || symbol.trim() === '') {
     return res.status(400).send('Symbol parameter is required');
   }
   if (!stock || stock.trim() === '') {
     return res.status(400).send('Stock parameter is required');
   }
-
+  
   if (stock === "NYSE") {
+    const finnhub = require('finnhub');
+    const finnhubClient = new finnhub.DefaultApi(process.env.FINNHUB_API_KEY);
     finnhubClient.quote(symbol, (error, data, response) => {
       if (error) {
         res.status(500).send(`Error retrieving quote: ${error.message} for ${symbol} on ${stock}`);
