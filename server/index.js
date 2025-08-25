@@ -5,6 +5,8 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const winston = require('winston');
+const client = require('prom-client');
+const register = new client.Registry();
 
 dotenv.config();
 
@@ -26,6 +28,57 @@ const logger = winston.createLogger({
 
 const app = express();
 const port = process.env.PORT || 3001;
+
+// Histogram for request durations
+const httpRequestDurationMicroseconds = new client.Histogram({
+  name: 'http_request_duration_seconds',
+  help: 'Duration of HTTP requests in seconds',
+  labelNames: ['method', 'route', 'status_code'],
+  buckets: [0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2, 5]
+});
+register.registerMetric(httpRequestDurationMicroseconds);
+
+// Counter for total requests
+const httpRequestCounter = new client.Counter({
+  name: 'http_requests_total',
+  help: 'Total number of HTTP requests',
+  labelNames: ['method', 'route', 'status_code']
+});
+register.registerMetric(httpRequestCounter);
+
+// Counter for errors
+const httpRequestErrorCounter = new client.Counter({
+  name: 'http_request_errors_total',
+  help: 'Total number of HTTP request errors',
+  labelNames: ['method', 'route', 'status_code']
+});
+register.registerMetric(httpRequestErrorCounter);
+
+app.get('/metrics', async (req, res) => {
+  res.set('Content-Type', register.contentType);
+  res.end(await register.metrics());
+});
+
+// Middleware to record metrics for every request
+app.use((req, res, next) => {
+  const start = process.hrtime();
+  res.on('finish', () => {
+    const diff = process.hrtime(start);
+    const duration = diff[0] + diff[1] / 1e9;
+    httpRequestDurationMicroseconds
+      .labels(req.method, req.route ? req.route.path : req.path, res.statusCode)
+      .observe(duration);
+    httpRequestCounter
+      .labels(req.method, req.route ? req.route.path : req.path, res.statusCode)
+      .inc();
+    if (res.statusCode >= 400) {
+      httpRequestErrorCounter
+        .labels(req.method, req.route ? req.route.path : req.path, res.statusCode)
+        .inc();
+    }
+  });
+  next();
+});
 
 app.get('/api/hello', (req, res) => {
   logger.info('GET /api/hello called');
