@@ -1,4 +1,3 @@
-//TODO check if needed in vite
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
