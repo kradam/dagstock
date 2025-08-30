@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import StockRow from './StockRow.jsx';
 import LoadingSpinner from './LoadingSpinner.jsx';
+import Notification from './Notification.jsx';
 import { MASTER_CURRENCY } from '../config/appConfig';
 import { createClient } from '@supabase/supabase-js';
 
@@ -10,12 +11,14 @@ function StockTable({ filterText, inStockOnly }) {
 
   const [stocks, setStocks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [notification, setNotification] = useState(null);
 
   useEffect(() => {
     getStocks();
   }, []);
 
   async function getStocks() {
+    // console.log('getStocks called at:', new Date().toISOString());
     setLoading(true);
     const { data, error } = await supabaseClient
       .from('stocks')
@@ -31,11 +34,13 @@ function StockTable({ filterText, inStockOnly }) {
       .order('company_name', { ascending: true });
 
     if (error) {
-      console.error("Error fetching stocks:", error);
+      setStocks([]);
       setLoading(false);
+      alert(`Error connecting to database:\n${error.message}`);
+      console.error(`Error connecting to database:\n${error.message}`);
     } else {
 
-      // Fetch latest price for each stock
+      let getQuoteFailed = false;
       const updatedStocks = await Promise.all(
         data.map(async (stock) => {
           try {
@@ -45,6 +50,8 @@ function StockTable({ filterText, inStockOnly }) {
             return { ...stock, price: quote.current };
           } catch (err) {
             // If API fails, keep original price
+            getQuoteFailed = true;
+            console.warn(`Failed to fetch quote for ${stock.company_symbol}:`, err);
             return stock;
           }
         })
@@ -52,6 +59,12 @@ function StockTable({ filterText, inStockOnly }) {
 
       setStocks(updatedStocks);
       setLoading(false);
+      
+      if (getQuoteFailed) {
+        setNotification('Some stock quotes could not be updated. Using cached prices.');
+        setTimeout(() => setNotification(null), 5000); // Hide after 5 seconds
+      }
+
     }
   }
 
@@ -89,6 +102,9 @@ function StockTable({ filterText, inStockOnly }) {
   return (
     <div className="stock-portfolio">
       <h1>Stock Portfolio</h1>
+      
+  <Notification message={notification} onClose={() => setNotification(null)} />
+      
       <table className="stock-table">
         <thead>
           <tr>
