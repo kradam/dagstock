@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import StockRow from './StockRow';
+import StockRow from './StockRow.jsx';
 import { MASTER_CURRENCY } from '../config/appConfig';
 import { createClient } from '@supabase/supabase-js';
 

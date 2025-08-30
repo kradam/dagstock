@@ -26,7 +26,8 @@ function App() {
             name, ratio_to_master_currency
           )
         )
-      `);
+      `)
+      .order('company_name', { ascending: true });
 
     if (error) {
       console.error("Error fetching stocks:", error);

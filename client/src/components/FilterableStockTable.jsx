@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import StockTable from './StockTable';
+import StockTable from './StockTable.jsx';
 import SearchBar from './SearchBar';
 
 function FilterableStockTable({ initialStocks }) {
