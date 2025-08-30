@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import StockRow from './StockRow.jsx';
+import LoadingSpinner from './LoadingSpinner.jsx';
 import { MASTER_CURRENCY } from '../config/appConfig';
 import { createClient } from '@supabase/supabase-js';
 
@@ -8,12 +9,14 @@ const supabaseClient = createClient(import.meta.env.VITE_SUPABASE_URL, import.me
 function StockTable({ filterText, inStockOnly }) {
 
   const [stocks, setStocks] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     getStocks();
   }, []);
 
   async function getStocks() {
+    setLoading(true);
     const { data, error } = await supabaseClient
       .from('stocks')
       .select(`
@@ -29,6 +32,7 @@ function StockTable({ filterText, inStockOnly }) {
 
     if (error) {
       console.error("Error fetching stocks:", error);
+      setLoading(false);
     } else {
 
       // Fetch latest price for each stock
@@ -47,6 +51,7 @@ function StockTable({ filterText, inStockOnly }) {
       );
 
       setStocks(updatedStocks);
+      setLoading(false);
     }
   }
 
@@ -76,6 +81,10 @@ function StockTable({ filterText, inStockOnly }) {
   const filteredStocks = stocks.filter(stock =>
     stock.company_name.toLowerCase().startsWith(filterText.toLowerCase())
   );
+
+  if (loading) {
+    return <LoadingSpinner title="Stock Portfolio" message="Loading stocks..." />;
+  }
 
   return (
     <div className="stock-portfolio">
