@@ -3,35 +3,52 @@ import StockRow from './StockRow.jsx';
 import { MASTER_CURRENCY } from '../config/appConfig';
 import { createClient } from '@supabase/supabase-js';
 
-// Supabase client
 const supabaseClient = createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_ANON_KEY);
 
-// Stock table component
-function StockTable({ initialStocks, filterText, inStockOnly }) {
+function StockTable({ filterText, inStockOnly }) {
 
-  // Format master currency
-  // const formatMasterCurrency = (amount) => {
-  //   return new Intl.NumberFormat('en-US', {
-  //     style: 'currency',
-  //     currency: MASTER_CURRENCY,
-  //     minimumFractionDigits: 0
-  //   }).format(amount);
-  // };
-
-  // // Format currency with thousand separators
-  // const formatCurrency = (amount) => {
-  //   return new Intl.NumberFormat('en-US', {
-  //     style: 'currency',
-  //     currency: 'USD',
-  //     minimumFractionDigits: 2
-  //   }).format(amount);
-  // };
-
-  const [stocks, setStocks] = useState(initialStocks)
+  const [stocks, setStocks] = useState([]);
 
   useEffect(() => {
-    setStocks(initialStocks);
-  }, [initialStocks]);
+    getStocks();
+  }, []);
+
+  async function getStocks() {
+    const { data, error } = await supabaseClient
+      .from('stocks')
+      .select(`
+        id, company_symbol, company_name, quantity, price,
+        stock_exchanges (
+          name,
+          currencies (
+            name, ratio_to_master_currency
+          )
+        )
+      `)
+      .order('company_name', { ascending: true });
+
+    if (error) {
+      console.error("Error fetching stocks:", error);
+    } else {
+
+      // Fetch latest price for each stock
+      const updatedStocks = await Promise.all(
+        data.map(async (stock) => {
+          try {
+            const res = await fetch(`/api/getQuote?symbol=${stock.company_symbol}&stock=${stock.stock_exchanges.name}`);
+            const quote = await res.json();
+            // Replace price with latest value from API (assuming quote.c is the price)
+            return { ...stock, price: quote.current };
+          } catch (err) {
+            // If API fails, keep original price
+            return stock;
+          }
+        })
+      );
+
+      setStocks(updatedStocks);
+    }
+  }
 
   
   const totalValue = useMemo(
@@ -40,11 +57,6 @@ function StockTable({ initialStocks, filterText, inStockOnly }) {
     [stocks]
   );
 
-    // Calculate total value from all stocks for percent calculation
-  // var totalValue = stocks.reduce((sum, stock) => sum + (stock.quantity * stock.price), 0);
-  // console.log("Total Portfolio Value:", totalValue);
-
-  // Handle quantity changes
   const handleQuantityChange = async (id, newQuantity) => {
     setStocks(prevStocks =>
       prevStocks.map(stock =>
@@ -64,16 +76,6 @@ function StockTable({ initialStocks, filterText, inStockOnly }) {
   const filteredStocks = stocks.filter(stock =>
     stock.company_name.toLowerCase().startsWith(filterText.toLowerCase())
   );
-
-  // Calculate value in master currency for each stock
-  // const filteredStocksWithMasterValue = filteredStocks.map(stock => ({
-  //   ...stock,
-  //   valueMaster: stock.quantity * stock.price * (stock.ratio_to_master_currency || 1)
-  // }));
-
-  // Calculate total portfolio value in master currency
-  // const totalMasterValue = filteredStocksWithMasterValue.reduce((sum, stock) => sum + stock.valueMaster, 0);
-
 
   return (
     <div className="stock-portfolio">

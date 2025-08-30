@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import StockTable from './StockTable.jsx';
 import SearchBar from './SearchBar';
 
-function FilterableStockTable({ initialStocks }) {
+function FilterableStockTable() {
   const [filterText, setFilterText] = useState('');
   const [inStockOnly, setInStockOnly] = useState(false);
   const [title, setTitle] = useState('');
@@ -16,7 +16,6 @@ function FilterableStockTable({ initialStocks }) {
         onFilterTextChange={setFilterText} 
         onInStockOnlyChange={setInStockOnly} />
       <StockTable 
-        initialStocks={initialStocks} 
         filterText={filterText}
         inStockOnly={inStockOnly} />
     </div>
