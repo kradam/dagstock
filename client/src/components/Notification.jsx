@@ -1,5 +1,4 @@
-import React from 'react';
-
+//TODO notification library - research
 function Notification({ message, onClose }) {
   if (!message) return null;
   return (

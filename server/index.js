@@ -1,5 +1,3 @@
-//TODO implement E2E backend tests
-
 // NOTE  iwr "https://sincere-stillness-production.up.railway.app/api/getQuote?symbol=AAPL&stock=NYSE"
 
 const express = require('express');

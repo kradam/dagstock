@@ -1,4 +1,4 @@
-// TODO make host parametrized to run it in CI/CD
+// TODO E2E tests-  parametrized to run it in CI/CD
 const request = require('supertest');
 
 describe('E2E: GET /api/getQuote (real backend)', () => {

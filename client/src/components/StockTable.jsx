@@ -5,6 +5,7 @@ import Notification from './Notification.jsx';
 import { MASTER_CURRENCY } from '../config/appConfig';
 import { createClient } from '@supabase/supabase-js';
 
+//TODO development version of database
 const supabaseClient = createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_ANON_KEY);
 
 function StockTable({ filterText, inStockOnly }) {
