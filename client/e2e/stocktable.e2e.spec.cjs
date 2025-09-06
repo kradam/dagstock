@@ -1,3 +1,4 @@
+ // npx playwright test e2e/stocktable.e2e.spec.cjs --headed
 const { test, expect } = require('@playwright/test');
 
 test.describe('StockTable E2E', () => {
