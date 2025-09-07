@@ -3,10 +3,7 @@ import StockRow from './StockRow.jsx';
 import LoadingSpinner from './LoadingSpinner.jsx';
 import Notification from './Notification.jsx';
 import { MASTER_CURRENCY } from '../config/appConfig';
-import { createClient } from '@supabase/supabase-js';
-
-//TODO development version of database
-const supabaseClient = createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_ANON_KEY);
+import { supabase as supabaseClient } from '../supabaseClient';
 
 function StockTable({ filterText, inStockOnly }) {
 
@@ -19,7 +16,7 @@ function StockTable({ filterText, inStockOnly }) {
   }, []);
 
   async function getStocks() {
-    // console.log('getStocks called at:', new Date().toISOString());
+    console.log('getStocks called at:', new Date().toISOString());
     setLoading(true);
     const { data, error } = await supabaseClient
       .from('stocks')

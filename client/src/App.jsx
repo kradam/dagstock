@@ -1,11 +1,42 @@
+import React, { useState, useEffect } from 'react';
 import './App.css';
+import { supabase } from './supabaseClient';
+import Login from './components/Login';
 import FilterableStockTable from './components/FilterableStockTable';
 
 function App() {
+  const [session, setSession] = useState(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+  };
 
   return (
     <div className="App">
-      <FilterableStockTable />
+      {!session ? (
+        <Login />
+      ) : (
+        <div>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '10px' }}>
+            <button onClick={handleLogout}>Logout</button>
+          </div>
+          <FilterableStockTable key={session.user.id} />
+        </div>
+      )}
     </div>
   );
 }
