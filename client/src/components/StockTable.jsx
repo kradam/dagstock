@@ -16,7 +16,7 @@ function StockTable({ filterText, inStockOnly }) {
   }, []);
 
   async function getStocks() {
-    console.log('getStocks called at:', new Date().toISOString());
+    // console.log('getStocks called at:', new Date().toISOString());
     setLoading(true);
     const { data, error } = await supabaseClient
       .from('stocks')
@@ -57,7 +57,7 @@ function StockTable({ filterText, inStockOnly }) {
 
       setStocks(updatedStocks);
       setLoading(false);
-      
+
       if (getQuoteFailed) {
         setNotification('Some stock quotes could not be updated. Using cached prices.');
         setTimeout(() => setNotification(null), 5000); // Hide after 5 seconds
@@ -66,43 +66,62 @@ function StockTable({ filterText, inStockOnly }) {
     }
   }
 
-  
+
   const totalValue = useMemo(
-    () => stocks.reduce((sum, stock) => 
+    () => stocks.reduce((sum, stock) =>
       sum + (stock.quantity * stock.price * (stock.stock_exchanges.currencies.ratio_to_master_currency || 1)), 0),
     [stocks]
   );
 
   const handleQuantityChange = async (id, newQuantity) => {
+    const originalStocks = stocks; // Keep a copy of the original state
+    setLoading(true);
+
+    // Optimistically update the UI first
     setStocks(prevStocks =>
       prevStocks.map(stock =>
         stock.id === id ? { ...stock, quantity: newQuantity } : stock
       )
     );
-    // Save the new quantity to Supabase
-    const { error } = await supabaseClient
+
+    const { error, data } = await supabaseClient
       .from('stocks')
       .update({ quantity: newQuantity })
-      .eq('id', id);
-    if (error) {
-      console.error('Error updating quantity in Supabase:', error);
+      .eq('id', id)
+      .select('*', { count: 'exact' }); // Request the count of affected rows
+
+    // console.log("data:", data);
+    // console.log("data.length", data.length);
+    const count = data?.length || 0; // Number of rows updated
+    // Check for any failure condition (direct error OR no rows updated)
+    if (error || !count) {
+      const errorMessage = error
+        ? error.message
+        : 'You do not have permission to update this stock.';
+      console.error('Failed to update quantity:', errorMessage);
+      setNotification(`Update failed: ${errorMessage}`);
+      setStocks(originalStocks); // Revert the UI to its original state
     }
+
+    setLoading(false);
+    // Set a timeout to clear the notification after 5 seconds
+    setTimeout(() => setNotification(null), 5000);
   };
-  
+
   const filteredStocks = stocks.filter(stock =>
     stock.company_name.toLowerCase().startsWith(filterText.toLowerCase())
   );
 
   if (loading) {
-    return <LoadingSpinner title="Stock Portfolio" message="Loading stocks..." />;
+    return <LoadingSpinner title="Stock Portfolio" message="Updating stocks..." />;
   }
 
   return (
     <div className="stock-portfolio">
       <h1>Stock Portfolio</h1>
-      
-  <Notification message={notification} onClose={() => setNotification(null)} />
-      
+
+      <Notification message={notification} onClose={() => setNotification(null)} />
+
       <table className="stock-table">
         <thead>
           <tr>
@@ -119,8 +138,8 @@ function StockTable({ filterText, inStockOnly }) {
         </thead>
         <tbody>
           {filteredStocks.map((stock) => (
-            <StockRow 
-              key={stock.company_symbol} 
+            <StockRow
+              key={stock.company_symbol}
               stock={stock}
               totalValue={totalValue}
               onQuantityChange={handleQuantityChange}
