@@ -1,25 +1,42 @@
-import React from 'react';
 
-// Stock row component
+import React, { useState, useEffect } from 'react';
+
 function StockRow({ stock, onQuantityChange, totalValue }) {
   const value = stock.quantity * stock.price;
-  // Use valueMaster and totalMasterValue for percent calculation
   const masterCurrencyValue = value * (stock.stock_exchanges.currencies.ratio_to_master_currency || 1);
   const percentOfPortfolio = totalValue > 0 ? ((masterCurrencyValue / totalValue) * 100).toFixed(0) : "0";
 
-  // Format numbers with thousand separators
-  // const formatCurrency = (amount) => {
-  //   return new Intl.NumberFormat('en-US', {
-  //     style: 'currency',
-  //     currency: 'USD',
-  //     minimumFractionDigits: 2
-  //   }).format(amount);
-  // };
+  // Local state for the input value
+  const [inputValue, setInputValue] = useState(stock.quantity);
 
-  const handleQuantityChange = (e) => {
-    const newQuantity = parseInt(e.target.value) || 0;
-    onQuantityChange(stock.id, newQuantity);
+  // Keep local input in sync with prop changes
+  useEffect(() => {
+    setInputValue(stock.quantity);
+  }, [stock.quantity]);
+
+  const handleInputChange = (e) => {
+    setInputValue(e.target.value);
   };
+
+
+  const saveQuantity = () => {
+    const newQuantity = parseInt(inputValue) || 0;
+    if (newQuantity !== stock.quantity) {
+      onQuantityChange(stock.id, newQuantity);
+    }
+  };
+
+  const handleInputBlur = () => {
+    saveQuantity();
+  };
+
+  const handleInputKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      saveQuantity();
+      e.target.blur(); // Optionally blur to provide visual feedback
+    }
+  };
+
   return (
     <tr className="stock-row">
       <td className="company-name">
@@ -34,10 +51,12 @@ function StockRow({ stock, onQuantityChange, totalValue }) {
       <td className="quantity">
         <input
           type="number"
-          value={stock.quantity}
-          onChange={handleQuantityChange}
+          value={inputValue}
+          onChange={handleInputChange}
+          onBlur={handleInputBlur}
           min="0"
           className="quantity-input"
+          onKeyDown={handleInputKeyDown}
         />
       </td>
       <td className="currency">
