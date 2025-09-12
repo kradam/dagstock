@@ -1,11 +1,22 @@
-
-
-import React from 'react';
 import LoadingSpinner from './LoadingSpinner.jsx';
 import Notification from './Notification.jsx';
 import StockTableContent from './StockTableContent.jsx';
 import PortfolioBarChart from './PortfolioBarChart.jsx';
 import useStocks from '../hooks/useStocks';
+import * as Sentry from '@sentry/react';
+
+// Add this button component to your app to test Sentry's error tracking
+function ErrorButton() {
+  return (
+    <button
+      onClick={() => {
+        throw new Error('This is your first error!');
+      }}
+    >
+      Break the world
+    </button>
+  );
+}
 
 function StockTable({ filterText, inStockOnly }) {
   const {
@@ -32,8 +43,11 @@ function StockTable({ filterText, inStockOnly }) {
         handleQuantityChange={handleQuantityChange}
       />
       <PortfolioBarChart stocks={filteredStocks} totalValue={totalValue} />
+      <ErrorButton />
     </div>
   );
 }
 
 export default StockTable;
+
+
