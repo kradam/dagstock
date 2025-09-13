@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react';
 import { useState, useEffect, useMemo } from 'react';
 import { supabase as supabaseClient } from '../supabaseClient';
 
@@ -27,6 +28,7 @@ export default function useStocks(filterText) {
       .order('company_name', { ascending: true });
 
     if (error) {
+      Sentry.captureException(error);
       setStocks([]);
       setLoading(false);
       setNotification(`Error connecting to database: ${error.message}`);
@@ -40,6 +42,7 @@ export default function useStocks(filterText) {
             return { ...stock, price: quote.current };
           } catch (err) {
             getQuoteFailed = true;
+            Sentry.captureException(err);
             return stock;
           }
         })
@@ -47,6 +50,7 @@ export default function useStocks(filterText) {
       setStocks(updatedStocks);
       setLoading(false);
       if (getQuoteFailed) {
+        Sentry.captureMessage('Some stock quotes could not be updated. Using cached prices.');
         setNotification('Some stock quotes could not be updated. Using cached prices.');
         setTimeout(() => setNotification(null), 5000);
       }
@@ -74,6 +78,11 @@ export default function useStocks(filterText) {
       .select();
     if (error || !data || data.length === 0) {
       const errorMessage = error ? error.message : 'You do not have permission to update this stock.';
+      if (error) {
+        Sentry.captureException(error);
+      } else {
+        Sentry.captureMessage(errorMessage);
+      }
       setNotification(`Update failed: ${errorMessage}`);
       setStocks(originalStocks);
     }
