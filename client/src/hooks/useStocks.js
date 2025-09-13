@@ -25,7 +25,6 @@ export default function useStocks(filterText) {
           )
         )
       `)
-      .order('company_name', { ascending: true });
 
     if (error) {
       Sentry.captureException(error);
@@ -90,9 +89,32 @@ export default function useStocks(filterText) {
     setTimeout(() => setNotification(null), 5000);
   };
 
-  const filteredStocks = stocks.filter(stock =>
-    stock.company_name.toLowerCase().startsWith(filterText.toLowerCase())
-  );
+
+  // Calculate value, masterCurrencyValue, percentOfPortfolio for each stock
+  const stocksWithCalculated = useMemo(() => {
+    return stocks.map(stock => {
+      const value = stock.quantity * stock.price;
+      const masterCurrencyValue = value * (stock.stock_exchanges.currencies.ratio_to_master_currency || 1);
+      return {
+        ...stock,
+        value,
+        masterCurrencyValue,
+      };
+    });
+  }, [stocks]);
+
+  const filteredStocks = useMemo(() => {
+    const filtered = stocksWithCalculated.filter(stock =>
+      stock.company_name.toLowerCase().startsWith(filterText.toLowerCase())
+    );
+    // Sort by masterCurrencyValue descending
+    return filtered
+      .map(stock => ({
+        ...stock,
+        percentOfPortfolio: totalValue > 0 ? ((stock.masterCurrencyValue / totalValue) * 100).toFixed(0) : "0"
+      }))
+      .sort((a, b) => b.masterCurrencyValue - a.masterCurrencyValue);
+  }, [stocksWithCalculated, filterText, totalValue]);
 
   return {
     stocks,

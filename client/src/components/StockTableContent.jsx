@@ -23,7 +23,6 @@ function StockTableContent({ filteredStocks, totalValue, handleQuantityChange })
           <StockRow
             key={stock.company_symbol}
             stock={stock}
-            totalValue={totalValue}
             onQuantityChange={handleQuantityChange}
           />
         ))}

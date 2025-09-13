@@ -1,10 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
 
-function StockRow({ stock, onQuantityChange, totalValue }) {
-  const value = stock.quantity * stock.price;
-  const masterCurrencyValue = value * (stock.stock_exchanges.currencies.ratio_to_master_currency || 1);
-  const percentOfPortfolio = totalValue > 0 ? ((masterCurrencyValue / totalValue) * 100).toFixed(0) : "0";
+function StockRow({ stock, onQuantityChange }) {
+  const { value, masterCurrencyValue, percentOfPortfolio } = stock;
 
   // Local state for the input value
   const [inputValue, setInputValue] = useState(stock.quantity);
