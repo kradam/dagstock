@@ -16,8 +16,8 @@ function SearchBar({
           checked={inStockOnly} 
           onChange={(e) => onInStockOnlyChange(e.target.checked)} />
         {' '}
-        Only show stocks in stock
-s      </label>
+        Show only no empty stocks
+     </label>
     </form>
   );
 }

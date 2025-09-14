@@ -9,7 +9,6 @@ function FilterableStockTable() {
 
     return (
     <div>
-      <h2>{title}</h2>
       <SearchBar 
         filterText={filterText} 
         inStockOnly={inStockOnly} 

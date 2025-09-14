@@ -31,8 +31,9 @@ function App() {
         <Login />
       ) : (
         <div>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '10px' }}>
-            <button onClick={handleLogout}>Logout</button>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '10px', position: 'relative' }}>
+            <h1 style={{ flex: 1, textAlign: 'center', margin: 0 }}>Stock Portfolio</h1>
+            <button onClick={handleLogout} style={{ position: 'absolute', right: 0 }}>Logout</button>
           </div>
           <FilterableStockTable key={session.user.id} />
         </div>

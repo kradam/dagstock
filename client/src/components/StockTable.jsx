@@ -8,19 +8,6 @@ import * as Sentry from '@sentry/react';
 import { supabase as supabaseClient } from '../supabaseClient';
 import React from 'react';
 
-// Add this button component to your app to test Sentry's error tracking
-function ErrorButton() {
-  return (
-    <button
-      onClick={() => {
-        throw new Error('This is your first error!');
-      }}
-    >
-      Break the world
-    </button>
-  );
-}
-
 function StockTable({ filterText, inStockOnly }) {
 
   const {
@@ -118,12 +105,11 @@ function StockTable({ filterText, inStockOnly }) {
   };
 
   if (loading) {
-    return <LoadingSpinner title="Stock Portfolio" message="Loading stocks..." />;
+    return <LoadingSpinner message="Loading stocks..." />;
   }
 
   return (
-    <div className="stock-portfolio">
-      <h1>Stock Portfolio</h1>
+    <div className="stock-portfolio">      
       <button onClick={() => setModalOpen(true)} style={{ marginBottom: 16 }}>Add Company</button>
       <Notification message={notification} onClose={() => setNotification(null)} />
       <StockTableContent
@@ -132,7 +118,6 @@ function StockTable({ filterText, inStockOnly }) {
         handleQuantityChange={handleQuantityChange}
       />
       <PortfolioBarChart stocks={filteredStocks} totalValue={totalValue} />
-      <ErrorButton />
       <AddCompanyModal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
