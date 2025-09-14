@@ -5,7 +5,7 @@ import SearchBar from './SearchBar';
 function FilterableStockTable() {
   const [filterText, setFilterText] = useState('');
   const [inStockOnly, setInStockOnly] = useState(false);
-  const [title, setTitle] = useState('');
+  const [title, setTitle] = useState(''); //TODO check if title is needed
 
     return (
     <div>

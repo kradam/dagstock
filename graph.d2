@@ -1,0 +1,23 @@
+App: {
+  Login: {
+    explanation: |md
+      - login
+      - password
+    |
+  }
+  FilterableStockTable: FilterableStockTable(session) {
+        SearchBar: {
+      explanation: |md xyz |
+    }
+    direction: up
+    StockTable: {
+      Notification
+      StockTableContent: {
+        StockRow
+      }
+      PortfolioBarChart
+      AddCompanyModal
+    }
+  }
+  Login <-> FilterableStockTable: XOR (session)
+}

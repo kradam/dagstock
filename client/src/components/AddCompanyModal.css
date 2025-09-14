@@ -1,0 +1,66 @@
+.modal-overlay-right {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.3);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+}
+
+.modal-right {
+  background: #fff;
+  border-radius: 8px 0 0 8px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.2);
+  margin-top: 24px;
+  margin-right: 0;
+  width: 340px;
+  padding: 24px 24px 16px 24px;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.modal-right h2 {
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.modal-right form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modal-right label {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.modal-right input,
+.modal-right select {
+  width: 100%;
+  font-size: 1rem;
+}
+
+.modal-right label {
+  font-size: 1rem;
+}
+
+.modal-error {
+  color: red;
+  margin-bottom: 8px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}
