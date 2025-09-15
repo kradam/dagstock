@@ -5,7 +5,7 @@ function AddCompanyModal({ isOpen, onClose, onAdd, stockExchanges, loading }) {
   const [companyName, setCompanyName] = useState('');
   const [companySymbol, setCompanySymbol] = useState('');
   const [selectedExchangeId, setSelectedExchangeId] = useState('');
-  const [quantity, setQuantity] = useState(0);
+  const [quantity, setQuantity] = useState();
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -13,7 +13,7 @@ function AddCompanyModal({ isOpen, onClose, onAdd, stockExchanges, loading }) {
       setCompanyName('');
       setCompanySymbol('');
       setSelectedExchangeId(stockExchanges[0]?.id || '');
-      setQuantity(0);
+      setQuantity("");
       setError('');
     }
   }, [isOpen, stockExchanges]);
@@ -29,8 +29,8 @@ function AddCompanyModal({ isOpen, onClose, onAdd, stockExchanges, loading }) {
       setError('Symbol must be 1-10 capital letters.');
       return;
     }
-    if (quantity < 0) {
-      setError('Quantity must be non-negative.');
+    if (quantity <= 0) {
+      setError('Quantity must be positive.');
       return;
     }
     const selectedExchangeObj = stockExchanges.find(ex => ex.id == selectedExchangeId);
@@ -66,7 +66,7 @@ function AddCompanyModal({ isOpen, onClose, onAdd, stockExchanges, loading }) {
           </label>
           <label>
             Quantity:
-            <input type="number" value={quantity} min={0} onChange={e => setQuantity(Number(e.target.value))} />
+            <input type="number" value={quantity} min={1} onChange={e => setQuantity(Number(e.target.value))} />
           </label>
           {error && <div className="modal-error">{error}</div>}
           <div className="modal-actions">
