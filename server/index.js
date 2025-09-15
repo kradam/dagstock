@@ -5,6 +5,7 @@ const dotenv = require('dotenv');
 const winston = require('winston');
 const client = require('prom-client');
 const register = new client.Registry();
+const cors = require('cors');
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ const logger = winston.createLogger({
 
 const app = express();
 const port = process.env.PORT || 3001;
+app.use(cors());
 
 // Histogram for request durations
 const httpRequestDurationMicroseconds = new client.Histogram({

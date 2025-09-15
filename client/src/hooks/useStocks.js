@@ -36,7 +36,8 @@ export default function useStocks(filterText) {
       const updatedStocks = await Promise.all(
         data.map(async (stock) => {
           try {
-            const res = await fetch(`/api/getQuote?symbol=${stock.company_symbol}&stock=${stock.stock_exchanges.name}`);
+            const apiUrl = import.meta.env.VITE_API_URL || '';
+            const res = await fetch(`${apiUrl}/api/getQuote?symbol=${stock.company_symbol}&stock=${stock.stock_exchanges.name}`);
             const quote = await res.json();
             return { ...stock, price: quote.current };
           } catch (err) {

@@ -63,7 +63,8 @@ function StockTable({ filterText, inStockOnly }) {
     // Check if quote is available
     var quote;
     try {
-      const res = await fetch(`/api/getQuote?symbol=${companySymbol}&stock=${selectedExchangeName}`);
+  const apiUrl = import.meta.env.VITE_API_URL || '';
+  const res = await fetch(`${apiUrl}/api/getQuote?symbol=${companySymbol}&stock=${selectedExchangeName}`);
       if (!res.ok) throw new Error('Quote fetch failed');
       quote = await res.json();
       if (!quote.current) throw new Error('No quote found');
