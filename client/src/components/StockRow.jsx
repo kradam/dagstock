@@ -18,7 +18,7 @@ function StockRow({ stock, onQuantityChange }) {
 
 
   const saveQuantity = () => {
-    const newQuantity = parseInt(inputValue) || 0;
+    const newQuantity = parseFloat(inputValue) || 0;
     if (newQuantity !== stock.quantity) {
       onQuantityChange(stock.id, newQuantity);
     }
