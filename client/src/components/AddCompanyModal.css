@@ -1,3 +1,14 @@
+/* Hide number input spinners/arrows in Chrome, Safari, Edge */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Hide number input spinners/arrows in Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
 .modal-overlay-right {
   position: fixed;
   top: 0;

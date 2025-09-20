@@ -41,7 +41,7 @@ function StockTable({ filterText, inStockOnly }) {
     }
   }, [modalOpen]);
 
-  const handleAddCompany = async ({ companyName, companySymbol,selectedExchangeId, selectedExchangeName, quantity, setError }) => {
+  const handleAddCompany = async ({ companyName, companySymbol, selectedExchangeId, selectedExchangeName, quantity, setError }) => {
     setAddLoading(true);
     setError('');
     // Check if symbol is unique
@@ -63,8 +63,8 @@ function StockTable({ filterText, inStockOnly }) {
     // Check if quote is available
     var quote;
     try {
-  const apiUrl = import.meta.env.VITE_API_URL || '';
-  const res = await fetch(`${apiUrl}/api/getQuote?symbol=${companySymbol}&stock=${selectedExchangeName}`);
+      const apiUrl = import.meta.env.VITE_API_URL || '';
+      const res = await fetch(`${apiUrl}/api/getQuote?symbol=${companySymbol}&stock=${selectedExchangeName}`);
       if (!res.ok) throw new Error('Quote fetch failed');
       quote = await res.json();
       if (!quote.current) throw new Error('No quote found');
@@ -110,7 +110,7 @@ function StockTable({ filterText, inStockOnly }) {
   }
 
   return (
-    <div className="stock-portfolio">      
+    <div className="stock-portfolio">
       <button onClick={() => setModalOpen(true)} style={{ marginBottom: 16 }}>Add Company</button>
       <Notification message={notification} onClose={() => setNotification(null)} />
       <StockTableContent

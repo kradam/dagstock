@@ -34,9 +34,6 @@ function AddCompanyModal({ isOpen, onClose, onAdd, stockExchanges, loading }) {
       return;
     }
     const selectedExchangeObj = stockExchanges.find(ex => ex.id == selectedExchangeId);
-    console.log(stockExchanges);
-    console.log(selectedExchangeId);
-    console.log(selectedExchangeObj);
     const selectedExchangeName = selectedExchangeObj ? selectedExchangeObj.name : '';
     await onAdd({ companyName, companySymbol, selectedExchangeId, selectedExchangeName, quantity, setError });
   };
@@ -66,7 +63,7 @@ function AddCompanyModal({ isOpen, onClose, onAdd, stockExchanges, loading }) {
           </label>
           <label>
             Quantity:
-            <input type="number" value={quantity} min={1} onChange={e => setQuantity(Number(e.target.value))} />
+            <input type="number" value={quantity} min={0.0001} step="0.0001" onChange={e => setQuantity(Number(e.target.value))} />
           </label>
           {error && <div className="modal-error">{error}</div>}
           <div className="modal-actions">
